@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-cloud-infrastructure-code-review-platform"
+version = "0.1.0"
+description = "Multi-tenant AI cloud infrastructure code review platform for GitHub, Terraform, Kubernetes and Azure"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [{name = "Ahmed Hassan"}]
+keywords = ["ai-code-review", "cloud-infrastructure", "terraform", "kubernetes", "azure", "devops", "platform-engineering", "finops"]
+
+[project.scripts]
+cloud-review-platform = "cloud_review.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

@@ -1,0 +1,8 @@
+{
+  "evidence_class": "simulated",
+  "rollback": {"steps": ["revert private DNS link", "verify prior resolution"]},
+  "findings": [],
+  "monthly_cost_delta_usd": 12,
+  "modeled_revenue_exposure_usd": 18000
+}
+

@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+*.db
+*-evidence.json
+dist/
+build/
+

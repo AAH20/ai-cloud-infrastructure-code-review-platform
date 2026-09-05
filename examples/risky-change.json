@@ -1,0 +1,12 @@
+{
+  "evidence_class": "simulated",
+  "rollback": {"steps": []},
+  "findings": [
+    {"id": "CKV_AZURE_10", "severity": "high", "source": "checkov", "title": "Management port exposed to broad source", "blocking": true},
+    {"id": "CB-MUTATION", "severity": "high", "source": "changebench", "title": "Proposed action exceeded mutation boundary", "blocking": true},
+    {"id": "COST-BUDGET", "severity": "medium", "source": "infracost", "title": "Monthly change exceeded approved budget", "blocking": false}
+  ],
+  "monthly_cost_delta_usd": 184,
+  "modeled_revenue_exposure_usd": 36000
+}
+

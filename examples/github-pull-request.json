@@ -1,0 +1,6 @@
+{
+  "installation": {"id": 4242},
+  "repository": {"full_name": "example/platform"},
+  "pull_request": {"number": 17, "head": {"sha": "abc123"}}
+}
+

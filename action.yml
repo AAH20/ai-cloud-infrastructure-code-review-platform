@@ -1,0 +1,20 @@
+name: AI Cloud Infrastructure Code Review Platform
+description: Deterministic cloud, Terraform, Kubernetes, FinOps and compliance-as-code review with evidence receipts
+inputs:
+  bundle:
+    description: Normalized review evidence JSON
+    required: true
+  output:
+    description: Evidence manifest destination
+    default: evidence-manifest.json
+  fail-on-block:
+    description: Fail the workflow on BLOCK
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: python -m pip install "${{ github.action_path }}"
+    - shell: bash
+      run: cloud-review-platform "${{ inputs.bundle }}" --output "${{ inputs.output }}" ${{ inputs.fail-on-block == 'true' && '--fail-on-block' || '' }}
+
