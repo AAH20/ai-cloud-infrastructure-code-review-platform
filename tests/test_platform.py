@@ -10,6 +10,7 @@ from cloud_review.evidence import create_manifest, verify_manifest
 from cloud_review.security import SignatureError, verify_github_signature
 from cloud_review.service import WebhookService
 from cloud_review.store import ReviewStore, TenantBoundaryError
+from cloud_review.terraform_impact import analyze_impact, markdown_report, parse_plan, sarif, to_review_bundle
 
 
 ROOT = Path(__file__).parents[1]
@@ -72,7 +73,32 @@ class PlatformTests(unittest.TestCase):
         self.assertEqual(manifest["result"]["decision"], "APPROVE")
         self.assertEqual(self.store.status(delivery.tenant_id, delivery.delivery_id), "completed")
 
+    def test_terraform_plan_maps_business_impact(self):
+        impact = analyze_impact(load("terraform-plan-replace.json"), load("cloudgraph-checkout.json"))
+        self.assertEqual(impact["mapping_coverage_percent"], 100)
+        self.assertEqual(impact["business_services"], ["business:checkout"])
+        self.assertEqual(impact["modeled_revenue_exposure_usd"], 420000)
+        self.assertIn("commerce-team", impact["owners"])
+
+    def test_replacement_blocks_and_exports_reports(self):
+        impact = analyze_impact(load("terraform-plan-replace.json"), load("cloudgraph-checkout.json"))
+        decision = decide(to_review_bundle(impact, ["restore previous private endpoint", "verify DNS"]))
+        self.assertEqual(decision["decision"], "BLOCK")
+        self.assertIn("Terraform infrastructure impact", markdown_report(impact, decision))
+        self.assertEqual(sarif(impact)["runs"][0]["results"][0]["level"], "error")
+
+    def test_unmapped_change_reduces_coverage(self):
+        graph = load("cloudgraph-checkout.json")
+        del graph["terraform_mapping"]["azurerm_kubernetes_cluster.prod"]
+        impact = analyze_impact(load("terraform-plan-replace.json"), graph)
+        self.assertEqual(impact["mapping_coverage_percent"], 50)
+        self.assertEqual(len(impact["unmapped_changes"]), 1)
+
+    def test_plan_parser_ignores_noop(self):
+        plan = load("terraform-plan-replace.json")
+        plan["resource_changes"].append({"address": "azurerm_resource_group.keep", "type": "azurerm_resource_group", "change": {"actions": ["no-op"]}})
+        self.assertEqual(len(parse_plan(plan)), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
-

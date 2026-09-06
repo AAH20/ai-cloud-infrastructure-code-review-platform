@@ -10,11 +10,32 @@ inputs:
   fail-on-block:
     description: Fail the workflow on BLOCK
     default: "true"
+  terraform-plan:
+    description: Optional Terraform/OpenTofu plan JSON
+    required: false
+  cloudgraph:
+    description: Optional CloudGraph snapshot JSON; required with terraform-plan
+    required: false
+  markdown-output:
+    description: Pull-request-ready impact report
+    default: terraform-impact.md
+  sarif-output:
+    description: SARIF result destination
+    default: terraform-impact.sarif
 runs:
   using: composite
   steps:
     - shell: bash
       run: python -m pip install "${{ github.action_path }}"
     - shell: bash
-      run: cloud-review-platform "${{ inputs.bundle }}" --output "${{ inputs.output }}" ${{ inputs.fail-on-block == 'true' && '--fail-on-block' || '' }}
-
+      env:
+        INPUT_PLAN: ${{ inputs.terraform-plan }}
+        INPUT_GRAPH: ${{ inputs.cloudgraph }}
+        INPUT_FAIL: ${{ inputs.fail-on-block }}
+      run: |
+        args=("${{ inputs.bundle }}" --output "${{ inputs.output }}")
+        if [[ -n "$INPUT_PLAN" ]]; then
+          args+=(--terraform-plan "$INPUT_PLAN" --cloudgraph "$INPUT_GRAPH" --markdown-output "${{ inputs.markdown-output }}" --sarif-output "${{ inputs.sarif-output }}")
+        fi
+        if [[ "$INPUT_FAIL" == "true" ]]; then args+=(--fail-on-block); fi
+        cloud-review-platform "${args[@]}"

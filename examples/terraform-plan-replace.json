@@ -1,0 +1,7 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {"address": "azurerm_private_endpoint.postgres", "type": "azurerm_private_endpoint", "change": {"actions": ["delete", "create"], "before_sensitive": {}, "after_sensitive": {}}},
+    {"address": "azurerm_kubernetes_cluster.prod", "type": "azurerm_kubernetes_cluster", "change": {"actions": ["update"], "before_sensitive": {}, "after_sensitive": {}}}
+  ]
+}

@@ -88,12 +88,30 @@ APPROVE score=100 hmac-sha256:...
 
 The risky reference change produces `BLOCK` with score `32/100` because it includes two high-severity findings, one budget violation and no rollback.
 
+## Terraform impact intelligence
+
+The platform now accepts native Terraform/OpenTofu plan JSON and an optional CloudGraph snapshot. It maps changed resource addresses to observed and declared dependencies, traverses upstream business services, routes accountable owners and emits Markdown, SARIF and signed JSON evidence.
+
+```bash
+cloud-review-platform examples/safe-change.json \
+  --terraform-plan examples/terraform-plan-replace.json \
+  --cloudgraph examples/cloudgraph-checkout.json \
+  --markdown-output terraform-impact.md \
+  --sarif-output terraform-impact.sarif \
+  --output terraform-impact.json \
+  --fail-on-block
+```
+
+The synthetic fixture maps replacement of an Azure PostgreSQL Private Endpoint and an AKS update to a checkout business service. It reports `$420,000` of **modeled** monthly revenue exposure, 100% plan-to-graph coverage and the responsible commerce, platform and network teams. Graph reachability indicates potential impact; it does not prove runtime causality or customer loss.
+
 ## GitHub Action
 
 ```yaml
 - uses: AAH20/ai-cloud-infrastructure-code-review-platform@v1
   with:
     bundle: evidence/normalized-review.json
+    terraform-plan: tfplan.json
+    cloudgraph: cloudgraph-snapshot.json
     output: evidence-manifest.json
     fail-on-block: "true"
 ```

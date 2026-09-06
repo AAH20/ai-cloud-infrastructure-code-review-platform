@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {"id":"business:checkout","kind":"business_service","name":"Checkout","attributes":{"owner":"commerce-team","monthly_revenue_usd":420000}},
+    {"id":"k8s:checkout","kind":"kubernetes_workload","name":"checkout","attributes":{"owner":"commerce-team"}},
+    {"id":"azure:aks-prod","kind":"azure_resource","name":"aks-prod","attributes":{"owner":"platform-team"}},
+    {"id":"azure:pe-postgres","kind":"azure_resource","name":"pe-postgres","attributes":{"owner":"network-team"}}
+  ],
+  "edges": [
+    {"source":"business:checkout","target":"k8s:checkout","relation":"depends_on"},
+    {"source":"k8s:checkout","target":"azure:aks-prod","relation":"runs_on"},
+    {"source":"k8s:checkout","target":"azure:pe-postgres","relation":"calls_through"}
+  ],
+  "terraform_mapping": {
+    "azurerm_private_endpoint.postgres": "azure:pe-postgres",
+    "azurerm_kubernetes_cluster.prod": "azure:aks-prod"
+  }
+}
